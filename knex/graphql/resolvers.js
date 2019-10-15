@@ -8,6 +8,7 @@ const resolvers = {
   Query: {
     users: (_, filters) => queries.getUsers(filters),
     categories: (_, filters,{req}) => {
+      //Check if token valid
       if(!req.email){
         return console.log("forbidden")
       }
