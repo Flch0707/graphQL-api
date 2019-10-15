@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require('cors')
-const multer  = require('multer')
 const PORT = process.env.PORT || 4000;
 const { ApolloServer } = require("apollo-server-express");
 const cookieParser = require("cookie-parser");
@@ -74,39 +73,6 @@ app.use(async (req, res, next) => {
 });
 
 server.applyMiddleware({ app });
-
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
-  if (!allowedTypes.includes(file.mimetype)) {
-    const error = new Error("Incorrect file");
-    error.code = "INCORRECT_FILETYPE";
-    return cb(error, false)
-  }
-  cb(null, true);
-}
-
-const upload = multer({
-  dest: './uploads',
-  fileFilter,
-  limits: {
-    fileSize: 5000000
-  }
-});
-
-app.post('/upload', upload.single('file'), (req, res) => {
-  res.json(req.file);
-});
-
-app.use((err, req, res, next) => {
-  if (err.code === "INCORRECT_FILETYPE") {
-    res.status(422).json({ error: 'Only images are allowed' });
-    return;
-  }
-  if (err.code === "LIMIT_FILE_SIZE") {
-    res.status(422).json({ error: 'Allow file size is 500KB' });
-    return;
-  }
-});
 
 app.listen(PORT, () => {
   console.log(`Listening on port: ${PORT}`);
